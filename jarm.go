@@ -414,6 +414,10 @@ func ExtractExtensionInfo(data []byte, offset int) string {
 	evals := [][]byte{}
 
 	for ecnt < emax {
+		if len(data) < ecnt+2 {
+			break
+		}
+
 		etypes = append(etypes, data[ecnt:ecnt+2])
 		if len(data) < ecnt+4 {
 			break
