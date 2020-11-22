@@ -45,14 +45,14 @@ func GetProbes(hostname string, port int) []JarmProbeOptions {
 	tls12TopHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "TOP_HALF", Grease: "NO_GREASE", ALPN: "NO_SUPPORT", V13Mode: "1.2_Support", ExtensionOrder: "FORWARD"}
 	tls12BottomHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "BOTTOM_HALF", Grease: "NO_GREASE", ALPN: "RARE_ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
 	tls12MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "RARE_ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "REVERSE"}
-	tls11MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS11, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"} // Should this be middle out?
+	tls11Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS11, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
 	tls13Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "REVERSE"}
 	tls13Reverse := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "REVERSE", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "FORWARD"}
 	tls13Invalid := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "NO1.3", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "FORWARD"}
 	tls13MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "REVERSE"}
 
 	return []JarmProbeOptions{
-		tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11MiddleOut, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,
+		tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,
 	}
 }
 
