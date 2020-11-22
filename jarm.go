@@ -477,6 +477,9 @@ func RawHashToFuzzyHash(raw string) string {
 	alpex := ""
 	for _, handshake := range strings.Split(raw, ",") {
 		comp := strings.Split(handshake, "|")
+		if len(comp) != 4 {
+			return ZeroHash
+		}
 		fhash = fhash + ExtractCipherBytes(comp[0])
 		fhash = fhash + ExtractVersionByte(comp[1])
 		alpex = alpex + comp[2]
