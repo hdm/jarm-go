@@ -124,6 +124,7 @@ func Fingerprint(t target, och chan result) {
 		ans, err := jarm.ParseServerHello(buff, probe)
 		if err != nil {
 			results = append(results, "")
+			continue
 		}
 
 		results = append(results, ans)
