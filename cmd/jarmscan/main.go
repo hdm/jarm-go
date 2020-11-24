@@ -35,6 +35,7 @@ func fingerprint(host string, port int) (string, error) {
 		ans, err := jarm.ParseServerHello(buff, probe)
 		if err != nil {
 			results = append(results, "")
+			continue
 		}
 
 		results = append(results, ans)
