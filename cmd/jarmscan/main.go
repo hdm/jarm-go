@@ -17,6 +17,9 @@ import (
 	"github.com/RumbleDiscovery/rumble-tools/pkg/rnd"
 )
 
+// Version is set by the goreleaser build
+var Version = "dev"
+
 var defaultPorts = flag.String("p", "443", "default ports")
 var workerCount = flag.Int("w", 256, "worker count")
 var quietMode = flag.Bool("q", false, "quiet mode")
