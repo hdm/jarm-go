@@ -4,6 +4,7 @@ before:
     - go generate ./...
 builds:
   - 
+    dir: cmd/jarmscan
     env:
     - CGO_ENABLED=0
     ldflags:
