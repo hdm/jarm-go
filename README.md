@@ -4,7 +4,7 @@ This is a Go implementation of [JARM](https://github.com/salesforce/jarm).
 
 # jarmscan
 
-To install jarmscan, download a binary from the releases page or install using `go get github.com/RumbleDiscovery/jarm-go/cmd/jarmscan`.
+To install jarmscan, download a binary from the [releases](https://github.com/RumbleDiscovery/jarm-go/releases) page or install using `go get github.com/RumbleDiscovery/jarm-go/cmd/jarmscan`.
 
 To run a scan, provide a list of targets. The following examples are all supported:
 
@@ -14,6 +14,10 @@ To run a scan, provide a list of targets. The following examples are all support
 * `jarmscan -p 443,465,993,995,8443,9443 192.168.0.0/24`
 * `jarmscan -p 192.168.0.1:8443`
 * `jarmscan -p 192.168.0.1,443`
+
+The `-q` option can be used to disable verbose output and the `-w` parameter can be used to increase the worker count.
+
+The `-p` option allows port lists and port ranges to be specified in a form similar to Nmap.
 
 # jarm
 
