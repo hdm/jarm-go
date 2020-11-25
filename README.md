@@ -4,7 +4,7 @@ This is a Go implementation of [JARM](https://github.com/salesforce/jarm).
 
 # jarmscan
 
-To install jarmscan, download a binary from the [releases](https://github.com/RumbleDiscovery/jarm-go/releases) page or install using `go get github.com/RumbleDiscovery/jarm-go/cmd/jarmscan`.
+To install jarmscan, download a binary from the [releases](https://github.com/RumbleDiscovery/jarm-go/releases) page or install using `go get -u -v github.com/RumbleDiscovery/jarm-go/cmd/jarmscan`.
 
 To run a scan, provide a list of targets. The following examples are all supported:
 
