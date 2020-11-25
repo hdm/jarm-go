@@ -12,8 +12,8 @@ To run a scan, provide a list of targets. The following examples are all support
 * `jarmscan -p 443,8443 192.168.0.1`
 * `jarmscan -p 1-1024 https://www.example.com/`
 * `jarmscan -p 443,465,993,995,8443,9443 192.168.0.0/24`
-* `jarmscan -p 192.168.0.1:8443`
-* `jarmscan -p 192.168.0.1,443`
+* `jarmscan 192.168.0.1:8443`
+* `jarmscan 192.168.0.1,443`
 
 The `-q` option can be used to disable verbose output and the `-w` parameter can be used to increase the worker count.
 
