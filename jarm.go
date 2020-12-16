@@ -43,7 +43,7 @@ type JarmProbeOptions struct {
 func GetProbes(hostname string, port int) []JarmProbeOptions {
 	tls12Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.2_SUPPORT", ExtensionOrder: "REVERSE"}
 	tls12Reverse := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "REVERSE", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.2_SUPPORT", ExtensionOrder: "FORWARD"}
-	tls12TopHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "TOP_HALF", Grease: "NO_GREASE", ALPN: "NO_SUPPORT", V13Mode: "1.2_SUPPORT", ExtensionOrder: "FORWARD"}
+	tls12TopHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "TOP_HALF", Grease: "NO_GREASE", ALPN: "NO_SUPPORT", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
 	tls12BottomHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "BOTTOM_HALF", Grease: "NO_GREASE", ALPN: "RARE_ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
 	tls12MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "RARE_ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "REVERSE"}
 	tls11Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS11, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
@@ -53,8 +53,8 @@ func GetProbes(hostname string, port int) []JarmProbeOptions {
 	tls13MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "ALPN", V13Mode: "1.3_SUPPORT", ExtensionOrder: "REVERSE"}
 
 	return []JarmProbeOptions{
-                tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,
-        }
+		tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,
+	}
 }
 
 // GetUint16Bytes returns the 16-bit big endian version of an integer
@@ -308,8 +308,8 @@ func ExtGetSupportedVersions(details JarmProbeOptions, grease bool) []byte {
 		tlsVersions = append(tlsVersions, []byte{0x03, 0x03})
 		tlsVersions = append(tlsVersions, []byte{0x03, 0x04})
 	}
-	if details.CipherOrder != "FORWARD" {
-		tlsVersions = MungCiphers(tlsVersions, details.CipherOrder)
+	if details.ExtensionOrder != "FORWARD" {
+		tlsVersions = MungCiphers(tlsVersions, details.ExtensionOrder)
 	}
 
 	ver := []byte{}
