@@ -53,8 +53,8 @@ func GetProbes(hostname string, port int) []JarmProbeOptions {
 	tls13MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "ALPN", V13Mode: "1.3_SUPPORT", ExtensionOrder: "REVERSE"}
 
 	return []JarmProbeOptions{
-		tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,
-	}
+                tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,	
+        }
 }
 
 // GetUint16Bytes returns the 16-bit big endian version of an integer
@@ -277,19 +277,20 @@ func ExtGetALPN(details JarmProbeOptions) []byte {
 
 // ExtGetKeyShare returns an encoded KeyShare extension
 func ExtGetKeyShare(grease bool) []byte {
+	ext := []byte{0x00, 0x33}
 	shareExt := []byte{}
+	if grease {
+		shareExt = RandomGrease()
+		shareExt = append(shareExt, 0x00, 0x01, 0x00)
+	}
+
 	shareExt = append(shareExt, 0x00, 0x1d)
 	shareExt = append(shareExt, 0x00, 0x20)
 	shareExt = append(shareExt, RandomBytes(32)...)
-
-	ext := []byte{0x00, 0x33}
-	if grease {
-		shareExt = append(ext, RandomGrease()...)
-		shareExt = append(ext, 0x00, 0x01, 0x00)
-	}
-
-	ext = append(ext, GetUint16Bytes(len(shareExt)+2)...)
-	ext = append(ext, GetUint16Bytes(len(shareExt))...)
+        secondLength := len(shareExt)
+        firstLength := secondLength + 2
+	ext = append(ext, GetUint16Bytes(firstLength)...)
+	ext = append(ext, GetUint16Bytes(secondLength)...)
 	ext = append(ext, shareExt...)
 	return ext
 }
