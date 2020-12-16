@@ -53,7 +53,7 @@ func GetProbes(hostname string, port int) []JarmProbeOptions {
 	tls13MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "ALPN", V13Mode: "1.3_SUPPORT", ExtensionOrder: "REVERSE"}
 
 	return []JarmProbeOptions{
-                tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,	
+                tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,
         }
 }
 
@@ -287,8 +287,8 @@ func ExtGetKeyShare(grease bool) []byte {
 	shareExt = append(shareExt, 0x00, 0x1d)
 	shareExt = append(shareExt, 0x00, 0x20)
 	shareExt = append(shareExt, RandomBytes(32)...)
-        secondLength := len(shareExt)
-        firstLength := secondLength + 2
+	secondLength := len(shareExt)
+	firstLength := secondLength + 2
 	ext = append(ext, GetUint16Bytes(firstLength)...)
 	ext = append(ext, GetUint16Bytes(secondLength)...)
 	ext = append(ext, shareExt...)
