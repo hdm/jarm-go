@@ -8,7 +8,6 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -493,7 +492,6 @@ func RawHashToFuzzyHash(raw string) string {
 		alpex = alpex + comp[2]
 		alpex = alpex + comp[3]
 	}
-	log.Print(raw)
 	hash256 := sha256.Sum256([]byte(alpex))
 	fhash += hex.EncodeToString(hash256[:])[0:32]
 	return fhash
