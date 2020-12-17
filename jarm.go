@@ -374,6 +374,8 @@ func ParseServerHello(data []byte, details JarmProbeOptions) (string, error) {
 	if !(data[0] == 22 && len(data) > 5 && data[5] == 2) {
 		return "|||", nil
 	}
+	// server_hello_length
+	server_hello_length := int(binary.BigEndian.Uint16(data[3:5]))
 
 	// Too short
 	if len(data) < 44 {
@@ -388,24 +390,28 @@ func ParseServerHello(data []byte, details JarmProbeOptions) (string, error) {
 
 	serverCip := hex.EncodeToString(data[cipherOffset : cipherOffset+2])
 	serverVer := hex.EncodeToString(data[9:11])
-	serverExt := ExtractExtensionInfo(data, counter)
+	serverExt := ExtractExtensionInfo(data, counter, server_hello_length)
 
 	return fmt.Sprintf("%s|%s|%s", serverCip, serverVer, serverExt), nil
 }
 
 // ExtractExtensionInfo returns parsed extension information from a server hello response
-func ExtractExtensionInfo(data []byte, offset int) string {
+func ExtractExtensionInfo(data []byte, offset int, server_hello_length int) string {
 	if len(data) < 85 || len(data) < (offset+53) {
-		return "|||"
+		return "|"
 	}
 
 	if data[offset+47] == 11 {
-		return "|||"
+		return "|"
+	}
+
+	if offset+47 >= server_hello_length+5 {
+		return "|"
 	}
 
 	if bytes.Equal(data[offset+50:offset+53], []byte{0x0e, 0xac, 0x0b}) ||
 		bytes.Equal(data[82:85], []byte{0x0f, 0xf0, 0x0b}) {
-		return "|||"
+		return "|"
 	}
 
 	ecnt := offset + 49
@@ -420,10 +426,10 @@ func ExtractExtensionInfo(data []byte, offset int) string {
 			break
 		}
 
-		etypes = append(etypes, data[ecnt:ecnt+2])
 		if len(data) < ecnt+4 {
 			break
 		}
+		etypes = append(etypes, data[ecnt:ecnt+2])
 
 		extlen := int(binary.BigEndian.Uint16(data[ecnt+2 : ecnt+4]))
 		if len(data) < ecnt+4+extlen {
