@@ -374,7 +374,7 @@ func ParseServerHello(data []byte, details JarmProbeOptions) (string, error) {
 		return "|||", nil
 	}
 	// server_hello_length
-	server_hello_length := int(binary.BigEndian.Uint16(data[3:5]))
+	serverHelloLength := int(binary.BigEndian.Uint16(data[3:5]))
 
 	// Too short
 	if len(data) < 44 {
@@ -389,13 +389,13 @@ func ParseServerHello(data []byte, details JarmProbeOptions) (string, error) {
 
 	serverCip := hex.EncodeToString(data[cipherOffset : cipherOffset+2])
 	serverVer := hex.EncodeToString(data[9:11])
-	serverExt := ExtractExtensionInfo(data, counter, server_hello_length)
+	serverExt := ExtractExtensionInfo(data, counter, serverHelloLength)
 
 	return fmt.Sprintf("%s|%s|%s", serverCip, serverVer, serverExt), nil
 }
 
 // ExtractExtensionInfo returns parsed extension information from a server hello response
-func ExtractExtensionInfo(data []byte, offset int, server_hello_length int) string {
+func ExtractExtensionInfo(data []byte, offset int, serverHelloLength int) string {
 	if len(data) < 85 || len(data) < (offset+53) {
 		return "|"
 	}
@@ -404,7 +404,7 @@ func ExtractExtensionInfo(data []byte, offset int, server_hello_length int) stri
 		return "|"
 	}
 
-	if offset+47 >= server_hello_length+5 {
+	if offset+42 >= serverHelloLength {
 		return "|"
 	}
 
