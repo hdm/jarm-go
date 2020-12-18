@@ -40,16 +40,16 @@ type JarmProbeOptions struct {
 
 // GetProbes returns the standard set of JARM probes in the correct order
 func GetProbes(hostname string, port int) []JarmProbeOptions {
-	tls12Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.2_Support", ExtensionOrder: "REVERSE"}
-	tls12Reverse := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "REVERSE", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.2_Support", ExtensionOrder: "FORWARD"}
-	tls12TopHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "TOP_HALF", Grease: "NO_GREASE", ALPN: "NO_SUPPORT", V13Mode: "1.2_Support", ExtensionOrder: "FORWARD"}
+	tls12Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.2_SUPPORT", ExtensionOrder: "REVERSE"}
+	tls12Reverse := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "REVERSE", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.2_SUPPORT", ExtensionOrder: "FORWARD"}
+	tls12TopHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "TOP_HALF", Grease: "NO_GREASE", ALPN: "NO_SUPPORT", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
 	tls12BottomHalf := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "BOTTOM_HALF", Grease: "NO_GREASE", ALPN: "RARE_ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
 	tls12MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS12, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "RARE_ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "REVERSE"}
 	tls11Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS11, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "NO_SUPPORT", ExtensionOrder: "FORWARD"}
-	tls13Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "REVERSE"}
-	tls13Reverse := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "REVERSE", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "FORWARD"}
-	tls13Invalid := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "NO1.3", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "FORWARD"}
-	tls13MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "ALPN", V13Mode: "1.3_Support", ExtensionOrder: "REVERSE"}
+	tls13Forward := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_SUPPORT", ExtensionOrder: "REVERSE"}
+	tls13Reverse := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "REVERSE", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_SUPPORT", ExtensionOrder: "FORWARD"}
+	tls13Invalid := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "NO1.3", CipherOrder: "FORWARD", Grease: "NO_GREASE", ALPN: "ALPN", V13Mode: "1.3_SUPPORT", ExtensionOrder: "FORWARD"}
+	tls13MiddleOut := JarmProbeOptions{Hostname: hostname, Port: port, Version: tls.VersionTLS13, Ciphers: "ALL", CipherOrder: "MIDDLE_OUT", Grease: "GREASE", ALPN: "ALPN", V13Mode: "1.3_SUPPORT", ExtensionOrder: "REVERSE"}
 
 	return []JarmProbeOptions{
 		tls12Forward, tls12Reverse, tls12TopHalf, tls12BottomHalf, tls12MiddleOut, tls11Forward, tls13Forward, tls13Reverse, tls13Invalid, tls13MiddleOut,
@@ -157,7 +157,7 @@ func GetCiphers(details JarmProbeOptions) []byte {
 		ciphers = MungCiphers(ciphers, details.CipherOrder)
 	}
 
-	if details.Grease != "GREASE" {
+	if details.Grease == "GREASE" {
 		ciphers = append([][]byte{RandomGrease()}, ciphers...)
 	}
 
@@ -276,19 +276,20 @@ func ExtGetALPN(details JarmProbeOptions) []byte {
 
 // ExtGetKeyShare returns an encoded KeyShare extension
 func ExtGetKeyShare(grease bool) []byte {
+	ext := []byte{0x00, 0x33}
 	shareExt := []byte{}
+	if grease {
+		shareExt = RandomGrease()
+		shareExt = append(shareExt, 0x00, 0x01, 0x00)
+	}
+
 	shareExt = append(shareExt, 0x00, 0x1d)
 	shareExt = append(shareExt, 0x00, 0x20)
 	shareExt = append(shareExt, RandomBytes(32)...)
-
-	ext := []byte{0x00, 0x33}
-	if grease {
-		shareExt = append(ext, RandomGrease()...)
-		shareExt = append(ext, 0x00, 0x01, 0x00)
-	}
-
-	ext = append(ext, GetUint16Bytes(len(shareExt)+2)...)
-	ext = append(ext, GetUint16Bytes(len(shareExt))...)
+	secondLength := len(shareExt)
+	firstLength := secondLength + 2
+	ext = append(ext, GetUint16Bytes(firstLength)...)
+	ext = append(ext, GetUint16Bytes(secondLength)...)
 	ext = append(ext, shareExt...)
 	return ext
 }
@@ -306,8 +307,8 @@ func ExtGetSupportedVersions(details JarmProbeOptions, grease bool) []byte {
 		tlsVersions = append(tlsVersions, []byte{0x03, 0x03})
 		tlsVersions = append(tlsVersions, []byte{0x03, 0x04})
 	}
-	if details.CipherOrder != "FORWARD" {
-		tlsVersions = MungCiphers(tlsVersions, details.CipherOrder)
+	if details.ExtensionOrder != "FORWARD" {
+		tlsVersions = MungCiphers(tlsVersions, details.ExtensionOrder)
 	}
 
 	ver := []byte{}
@@ -372,6 +373,8 @@ func ParseServerHello(data []byte, details JarmProbeOptions) (string, error) {
 	if !(data[0] == 22 && len(data) > 5 && data[5] == 2) {
 		return "|||", nil
 	}
+	// server_hello_length
+	serverHelloLength := int(binary.BigEndian.Uint16(data[3:5]))
 
 	// Too short
 	if len(data) < 44 {
@@ -386,24 +389,28 @@ func ParseServerHello(data []byte, details JarmProbeOptions) (string, error) {
 
 	serverCip := hex.EncodeToString(data[cipherOffset : cipherOffset+2])
 	serverVer := hex.EncodeToString(data[9:11])
-	serverExt := ExtractExtensionInfo(data, counter)
+	serverExt := ExtractExtensionInfo(data, counter, serverHelloLength)
 
 	return fmt.Sprintf("%s|%s|%s", serverCip, serverVer, serverExt), nil
 }
 
 // ExtractExtensionInfo returns parsed extension information from a server hello response
-func ExtractExtensionInfo(data []byte, offset int) string {
+func ExtractExtensionInfo(data []byte, offset int, serverHelloLength int) string {
 	if len(data) < 85 || len(data) < (offset+53) {
-		return "|||"
+		return "|"
 	}
 
 	if data[offset+47] == 11 {
-		return "|||"
+		return "|"
+	}
+
+	if offset+42 >= serverHelloLength {
+		return "|"
 	}
 
 	if bytes.Equal(data[offset+50:offset+53], []byte{0x0e, 0xac, 0x0b}) ||
 		bytes.Equal(data[82:85], []byte{0x0f, 0xf0, 0x0b}) {
-		return "|||"
+		return "|"
 	}
 
 	ecnt := offset + 49
@@ -418,10 +425,10 @@ func ExtractExtensionInfo(data []byte, offset int) string {
 			break
 		}
 
-		etypes = append(etypes, data[ecnt:ecnt+2])
 		if len(data) < ecnt+4 {
 			break
 		}
+		etypes = append(etypes, data[ecnt:ecnt+2])
 
 		extlen := int(binary.BigEndian.Uint16(data[ecnt+2 : ecnt+4]))
 		if len(data) < ecnt+4+extlen {
