@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"golang.org/x/net/proxy"
 	"net"
 	"net/url"
 	"os"
@@ -104,7 +105,8 @@ func Fingerprint(t target, och chan result) {
 
 	results := []string{}
 	for _, probe := range jarm.GetProbes(t.Host, t.Port) {
-		c, err := net.DialTimeout("tcp", net.JoinHostPort(t.Host, fmt.Sprintf("%d", t.Port)), time.Second*2)
+		dialer := proxy.FromEnvironmentUsing(&net.Dialer{Timeout: time.Second * 2})
+		c, err := dialer.Dial("tcp", net.JoinHostPort(t.Host, fmt.Sprintf("%d", t.Port)))
 		if err != nil {
 			// och <- result{Target: t, Error: err}
 			return
