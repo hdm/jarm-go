@@ -189,7 +189,7 @@ func main() {
 	}
 
 	if *workerCount < 1 {
-		log.Fatalf("invalid worker count: %s", *workerCount)
+		log.Fatalf("invalid worker count: %d", *workerCount)
 	}
 
 	if *quietMode {
