@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"golang.org/x/net/proxy"
 	"net"
 	"net/url"
 	"os"
@@ -11,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/net/proxy"
 
 	log "github.com/sirupsen/logrus"
 
@@ -24,6 +25,7 @@ var Version = "dev"
 var defaultPorts = flag.String("p", "443", "default ports")
 var workerCount = flag.Int("w", 256, "worker count")
 var quietMode = flag.Bool("q", false, "quiet mode")
+var retries = flag.Int("r", 0, "number of times to retry dialing")
 
 // ValidPort determines if a port number is valid
 func ValidPort(pnum int) bool {
@@ -106,15 +108,35 @@ func Fingerprint(t target, och chan result) {
 	results := []string{}
 	for _, probe := range jarm.GetProbes(t.Host, t.Port) {
 		dialer := proxy.FromEnvironmentUsing(&net.Dialer{Timeout: time.Second * 2})
-		c, err := dialer.Dial("tcp", net.JoinHostPort(t.Host, fmt.Sprintf("%d", t.Port)))
-		if err != nil {
-			// och <- result{Target: t, Error: err}
+		addr := net.JoinHostPort(t.Host, fmt.Sprintf("%d", t.Port))
+
+		c := net.Conn(nil)
+		n := 0
+
+		for c == nil && n <= t.Retries {
+			// Ignoring error since error message was already being dropped.
+			// Also, if theres an error, c == nil.
+			if c, _ = dialer.Dial("tcp", addr); c != nil || t.Retries == 0 {
+				break
+			}
+
+			bo := t.Backoff
+			if bo == nil {
+				bo = DefualtBackoff
+			}
+
+			time.Sleep(bo(n, t.Retries))
+
+			n++
+		}
+
+		if c == nil {
 			return
 		}
 
 		data := jarm.BuildProbe(probe)
 		c.SetWriteDeadline(time.Now().Add(time.Second * 5))
-		_, err = c.Write(data)
+		_, err := c.Write(data)
 		if err != nil {
 			results = append(results, "")
 			c.Close()
@@ -141,9 +163,16 @@ func Fingerprint(t target, och chan result) {
 	}
 }
 
+var DefualtBackoff = func(r, m int) time.Duration {
+	return time.Second
+}
+
 type target struct {
 	Host string
 	Port int
+
+	Retries int
+	Backoff func(r, m int) time.Duration
 }
 
 type result struct {
@@ -271,6 +300,8 @@ func main() {
 						tch <- target{
 							Host: thost,
 							Port: port,
+
+							Retries: *retries,
 						}
 					}
 				}
