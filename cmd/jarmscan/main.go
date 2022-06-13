@@ -15,8 +15,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/RumbleDiscovery/jarm-go"
-	"github.com/RumbleDiscovery/rumble-tools/pkg/rnd"
+	"github.com/hdm/jarm-go"
 )
 
 // Version is set by the goreleaser build
@@ -308,7 +307,7 @@ func main() {
 			}()
 
 			// Try to iterate the host as a CIDR range
-			herr := rnd.AddressesFromCIDR(host, hch, qch)
+			herr := jarm.AddressesFromCIDR(host, hch, qch)
 
 			// Not a parseable range, handle it as a bare host instead
 			if herr != nil {

@@ -1,6 +1,6 @@
 package fuzz
 
-import "github.com/RumbleDiscovery/jarm-go"
+import "github.com/hdm/jarm-go"
 
 // Fuzz uses go-fuzz to test BuildProbe()
 func Fuzz(data []byte) int {

@@ -1,6 +1,6 @@
 package fuzz
 
-import "github.com/RumbleDiscovery/jarm-go"
+import "github.com/hdm/jarm-go"
 
 var fuzzProbes = jarm.GetProbes("placeholder", 443)
 
