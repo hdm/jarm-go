@@ -1,4 +1,4 @@
-module github.com/RumbleDiscovery/jarm-go
+module github.com/hdm/jarm-go
 
 go 1.15
 
