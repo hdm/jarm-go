@@ -8,7 +8,7 @@ To install jarmscan, download a binary from the [releases](https://github.com/hd
 
 To run a scan, provide a list of targets. The following examples are all supported:
 
-* `jarmscan www.rumble.run`
+* `jarmscan www.example.com`
 * `jarmscan -p 443,8443 192.168.0.1`
 * `jarmscan -p 1-1024 https://www.example.com/`
 * `jarmscan -p 443,465,993,995,8443,9443 192.168.0.0/24`
