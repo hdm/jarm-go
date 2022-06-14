@@ -1,5 +1,7 @@
 # jarm-go
 
+## Warning: This project is archived and is now read-only. Feel free to fork this as needed.
+
 This is a Go implementation of [JARM](https://github.com/salesforce/jarm).
 
 # jarmscan
